@@ -16,6 +16,9 @@ from cse40.assignment import Assignment
 from cse40.question import Question
 from cse40.style import Style
 
+from explain import Explainer
+explainer = Explainer("CSE 140", "PA2")
+
 THIS_DIR = os.path.dirname(os.path.realpath(__file__)) # p1 path
 BASE_DIR = os.path.join(THIS_DIR, '..') # pacman-dev path
 
@@ -39,7 +42,8 @@ class Q1(Question):
         if problem.getExpandedCount() / self.solution[0] <= self.leeway[0] or math.isclose(problem.getExpandedCount(), self.solution[0]):
             self.full_credit()
         else:
-            self.add_message('Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), self.solution[0]))
+            feedback = explainer.get_feedback("some_info", default = 'Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), self.solution[0]))
+            self.add_message(feedback)
 
 class Q2(Question):
     def __init__(self, name, max_points):
@@ -56,7 +60,8 @@ class Q2(Question):
         if problem.getExpandedCount() / self.solution[0] <= self.leeway[0] or math.isclose(problem.getExpandedCount(), self.solution[0]):
             self.full_credit()
         else:
-            self.add_message('Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), self.solution[0]))
+            feedback = explainer.get_feedback("some_info", default = 'Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), self.solution[0]))
+            self.add_message(feedback)
 
 class Q3(Question):
     def __init__(self, name, max_points):
@@ -80,7 +85,8 @@ class Q3(Question):
             if problem.getExpandedCount() / solution <= leeway or math.isclose(problem.getExpandedCount(), solution):
                 self.score += 0.5
             else:
-                self.add_message('Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), solution))
+                feedback = explainer.get_feedback("some_info", default = 'Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), solution))
+                self.add_message(feedback)
 
         self.score = int(self.score)
 
@@ -99,7 +105,8 @@ class Q4(Question):
         if problem.getExpandedCount() / self.solution[0] <= self.leeway[0] or math.isclose(problem.getExpandedCount(), self.solution[0]):
             self.full_credit()
         else:
-            self.add_message('Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), self.solution[0]))
+            feedback = explainer.get_feedback("some_info", default = 'Wrong number of nodes expanded for %s: %d vs %d' % (self.name, problem.getExpandedCount(), self.solution[0]))
+            self.add_message(feedback)
 
 class Q5(Question):
     def __init__(self, name, max_points):
@@ -120,19 +127,22 @@ class Q5(Question):
         corners = ((1, 1), (1, layout_top), (layout_right, 1), (layout_right, layout_top))
 
         if path == None:
-            self.add_message('Optimal path from student problem did not match the optimal path for %s: %s vs %d' % (self.name, "NoneType", self.solution[0]))
+            feedback = explainer.get_feedback("some_info", default = 'Optimal path from student problem did not match the optimal path for %s: %s vs %d' % (self.name, "NoneType", self.solution[0]))
+            self.add_message(feedback)
             return
 
         if len(path) / self.solution[0] <= self.leeway[0] or math.isclose(len(path), self.solution[0]):
             for corner in corners:
                 if corner not in visited:
-                    self.add_message('Path missed corner ' + str(corner))
+                    feedback = explainer.get_feedback("some_info", default = 'Path missed corner ' + str(corner))
+                    self.add_message(feedback)
                 else:
                     self.score += 0.5
             if self.score != self.max_points:
                 self.score = 0
         else:
-            self.add_message('Optimal path from student problem did not match the optimal path for %s: %d vs %d' % (self.name, len(path), self.solution[0]))
+            feedback = explainer.get_feedback("some_info", default = 'Optimal path from student problem did not match the optimal path for %s: %d vs %d' % (self.name, len(path), self.solution[0]))
+            self.add_message(feedback)
 
 class Q6(Question):
     def __init__(self, name, max_points):
@@ -145,25 +155,30 @@ class Q6(Question):
         heuristic = searchAgents_student.cornersHeuristic
         for name, cost, text_layout in CORNER_TESTS:
             if not cornerAdmissible(text_layout, cost, heuristic):
-                self.add_message('Corners heuristic failed admissibility test %s' % (name))
+                feedback = explainer.get_feedback("some_info", default = 'Corners heuristic failed admissibility test %s' % (name))
+                self.add_message(feedback)
                 return
-            self.add_message('Corners heuristic passed admissibility test %s' % (name))
+            feedback = explainer.get_feedback("some_info", default = 'Corners heuristic passed admissibility test %s' % (name))
+            self.add_message(feedback)
 
         startState = pacman.PacmanGameState(layout.getLayout(self.layouts[0]))
         problem = searchAgents_student.CornersProblem(startState)
         path = search_student.aStarSearch(problem, heuristic)
 
         if heuristic(problem.startingState(), problem) > self.solution[0]:
-            self.add_message('Corners heuristic failed admissibility test (mediumCorners)')
+            feedback = explainer.get_feedback("some_info", default = 'Corners heuristic failed admissibility test (mediumCorners)')
+            self.add_message(feedback)
             return
         if problem.actionsCost(path) > self.solution[0]:
-            self.add_message('A* gave a non-optimal solution to mediumCorners; maybe not admissible!')
+            feedback = explainer.get_feedback("some_info", default = 'A* gave a non-optimal solution to mediumCorners; maybe not admissible!')
+            self.add_message(feedback)
             return
 
         self.add_message("For mediumCorners, the A* agent expanded %d nodes" % (problem.getExpandedCount()))
         for threshold in self.thresholds:
             if problem.getExpandedCount() < threshold:
-                self.add_message('Passed Threshold: %d' % (threshold))
+                feedback = explainer.get_feedback("some_info", default = 'Passed Threshold: %d' % (threshold))
+                self.add_message(feedback)
                 self.score += 1
 
 class Q7(Question):
@@ -178,31 +193,38 @@ class Q7(Question):
         heuristic = searchAgents_student.foodHeuristic
         for name, cost, text_layout in FOOD_TESTS:
             if not foodAdmissible(text_layout, cost, heuristic):
-                self.add_message('Food heuristic failed admissibility test %s' % (name))
+                feedback = explainer.get_feedback("some_info", default = 'Food heuristic failed admissibility test %s' % (name))
+                self.add_message(feedback)
                 return
             self.add_message('Food heuristic passed admissibility test %s' % (name))
 
             if not foodConsistency(text_layout, cost, heuristic):
-                self.add_message('Food heuristic failed consistency test %s' % (name))
+                feedback = explainer.get_feedback("some_info", default = 'Food heuristic failed consistency test %s' % (name))
+                self.add_message(feedback)
                 self.consistency = False
                 continue
-            self.add_message('Food heuristic passed consistency test %s' % (name))
+            feedback = explainer.get_feedback("some_info", default = 'Food heuristic passed consistency test %s' % (name))
+            self.add_message(feedback)
+            
 
         startState = pacman.PacmanGameState(layout.getLayout(self.layouts[0]))
         problem = FoodSearchProblem(startState)
         path = search_student.aStarSearch(problem, heuristic)
 
         if heuristic(problem.startingState(), problem) > self.solution[0]:
-            self.add_message('Food heuristic failed admissibility test trickySearch')
+            feedback = explainer.get_feedback("some_info", default = 'Food heuristic failed admissibility test trickySearch')
+            self.add_message(feedback)
             return
         if problem.actionsCost(path) > self.solution[0]:
-            self.add_message('A* gave a non-optimal solution to trickySearch; maybe not admissible!')
+            feedback = explainer.get_feedback("some_info", default = 'A* gave a non-optimal solution to trickySearch; maybe not admissible!')
+            self.add_message(feedback)
             return
 
         self.add_message("For trickySearch, the A* agent expanded %d nodes" % (problem.getExpandedCount()))
         for threshold in self.thresholds:
             if problem.getExpandedCount() < threshold:
-                self.add_message('Passed Threshold: %d' % (threshold))
+                feedback = explainer.get_feedback("some_info", default = 'Passed Threshold: %d' % (threshold))
+                self.add_message(feedback)
                 self.score += 1
 
         if self.consistency:
@@ -221,7 +243,8 @@ class Q8(Question):
             path = problem.findPathToClosestDot(gameState)
 
             if len(path) != self.solution[i]:
-                self.add_message('Closest dot not found in %s' % (FOOD_TESTS[i][0]))
+                feedback = explainer.get_feedback("some_info", default = 'Closest dot not found in %s' % (FOOD_TESTS[i][0]))
+                self.add_message(feedback)
                 return
 
         self.full_credit()
@@ -238,7 +261,6 @@ class Extra(Question):
         args = pacman.readCommand(['-l', 'bigSearch', '-p', 'ApproximateSearchAgent', '--null-graphics'])
         games = pacman.runGames(**args)
         extra_time = (time.time() - start_time)
-
         self.add_message('Extra credit runtime: %1.2f' % (extra_time))
         self.add_message('Extra credit total moves %d' % (len(games[0].moveHistory)))
 
