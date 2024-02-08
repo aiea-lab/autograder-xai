@@ -18,7 +18,7 @@ class Explainer():
         return self._assignment
     
     #methods
-    def get_feedback(self, some_info = "None", default = "something went wrong"):
+    def get_feedback(self, some_info, default = "something went wrong"):
         #make call to llm
 
         #else
