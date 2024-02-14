@@ -1,25 +1,16 @@
-class Explainer():
-    def __init__(self, class_name = 'default Class', assignment = 'default assignment'):
-        self._class_name = class_name
-        self._assignment = assignment
+class Explainer:
+    def __init__(self, course, assignment):
+        self.course = course
+        self.assignment = assignment
+        self.messages = []
 
-    #setters
-    def set_class_name(self, name):
-        self._class_name = name
-
-    def set_assignment(self, assign):
-        self._assignment = assign
-
-    #getters
-    def get_class_name(self):
-        return self._class_name
-    
-    def get_assignment(self):
-        return self._assignment
-    
-    #methods
-    def get_feedback(self, some_info, default = "something went wrong"):
-        #make call to llm
-
-        #else
+    # need to also implement the some_info input
+    def get_feedback(self, default="TODO"):
         return default
+    
+    def add_message(self, message):
+        self.messages.append(message)
+    
+    def print_feedback(self):
+        for message in self.messages:
+            print(message)
