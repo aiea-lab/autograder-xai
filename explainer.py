@@ -1,4 +1,4 @@
-from autograderXAI import data
+from autograderXAI.data import data
 
 class Explainer:
     def __init__(self, course, assignment, question):
