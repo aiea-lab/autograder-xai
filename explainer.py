@@ -1,16 +1,17 @@
+from data import data
+
 class Explainer:
-    def __init__(self, course, assignment):
+    def __init__(self, course, assignment, question):
         self.course = course
         self.assignment = assignment
+        self.question = question
         self.messages = []
 
     # need to also implement the some_info input
     def get_feedback(self, default="TODO"):
-        return default
+        return default + "\n> " + self.get_explanation()
     
-    def add_message(self, message):
-        self.messages.append(message)
-    
-    def print_feedback(self):
-        for message in self.messages:
-            print(message)
+    def get_explanation(self, issue_id):
+        if issue_id in data:
+            return data[issue_id]
+        return "sample explanation"
