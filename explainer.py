@@ -6,11 +6,13 @@ class Explainer:
         self.assignment = assignment
         self.question = question
         self.messages = []
-        self.data = []
-        with open(csv_file, mode='r') as file:
-            reader = csv.DictReader(file)
+        self.data = {}
+        with open(csv_file, newline='') as csvfile:
+            reader = csv.reader(csvfile)
             for row in reader:
-                self.data.append(row)
+                key = ('_').join(row[0:3])
+                val = row[5]
+                self.data[key] = val
 
     # need to also implement the some_info input
     def get_feedback(self, default="TODO", issue_id=-1):
@@ -24,7 +26,3 @@ class Explainer:
     
     def get_data(self):
         return self.data
-
-# e = Explainer("cse140", "p0", "q1")
-# f = e.get_feedback("ERROR: you failed the example!", 0)
-# print(f)
