@@ -8,13 +8,27 @@ class Analysis:
         then get_feedback() can just directly call the analysis function directly
         from the dictionary. 
         """
-        pass
+        # format: 'key' : 'function'
+        self.function_links = {
+            'p0_q1' : self.p0_q1,
+            'p0_q2' : self.p0_q2
+        }
     def get_feedback(self, key, source):
-        # key tells us what analysis function to run
-        return self.p0_buyLotsOfFruit(source)
+        """
+        The parameter 'key' tells us what analysis function to run
+        The parameter 'source' is the code
+        
+        Currently set to always use p0_Q1() regardless
+        """
+        if key in self.function_links:
+            return self.function_links[key](source)
+        else:
+            return "Dynamic feedback implementation not found."
+        # return self.p0_Q1(source)
         # feedback = f"dynamic feedback for {assignment} and {question}"
         # return feedback
 
+    # Helper Functions
     def chunk_source(self, source):
         """
         Steps:
@@ -93,7 +107,8 @@ class Analysis:
             
             return feedback
 
-    def p0_buyLotsOfFruit(self, source):
+    # Question Analysis Functions
+    def p0_q1(self, source):
         """
         What would be something to check for here, as a proof of concept?
         Break the source down into meaningful chunks, e.g.
@@ -105,7 +120,7 @@ class Analysis:
         - increment must be inside for loop
         - return statement must be the very last chunk
         """
-        feedback_start = "Dynamic feedback for p0_buyLotsOfFruit begins:\n"
+        feedback_start = "Dynamic feedback for p0_Q1 begins:\n"
         feedback = ""
         
         # Break into chunks
@@ -149,5 +164,12 @@ class Analysis:
         in the code, right? So something would have to change there.
         """
         if '-' not in feedback:
-            feedback += "   +lgtm"
+            feedback += "lgtm."
         return feedback_start + feedback
+
+    def p0_q2(self, source):
+        feedback_start = "Dynamic feedback for p0_Q2 begins:\n"
+        feedback = "    -Analysis not yet implemented."
+
+        return feedback_start + feedback
+

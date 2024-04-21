@@ -30,7 +30,7 @@ class Explainer:
     # need to also implement the some_info input
     def get_feedback(self, default="TODO", issue_id=-1, source=""):
         # Dynamic explanation
-        key = f"{self.assignment}_{self.question}_{issue_id}"
+        key = f"{self.assignment}_{self.question}"
         dynamic_exp = self.analyser.get_feedback(key, source)
         return default + "\n> " + dynamic_exp
 
