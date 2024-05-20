@@ -1,4 +1,4 @@
-import re
+from ast_grep_py import SgRoot
 
 class Analysis:
     def __init__(self):
@@ -108,68 +108,67 @@ class Analysis:
             return feedback
 
     # Question Analysis Functions
-    def p0_q1(self, source):
+    def p0_q1(self, src):
         """
-        What would be something to check for here, as a proof of concept?
-        Break the source down into meaningful chunks, e.g.
-        - for loop (if we can't find it; error)
-        - increment inside the loop (if we can't find it; error)
-        - return statement (if we can't find it; error)
-        
-        Enforce rules, e.g.
-        - increment must be inside for loop
-        - return statement must be the very last chunk
+        Rules:
+        for
+            increment OR assignment
+        return
         """
-        feedback_start = "Dynamic feedback for p0_Q1 begins:\n"
+        feedback_start = "Dynamic feedback for p0_q1 begins:\n"
         feedback = ""
-        
-        # Break into chunks
-        chunks = self.chunk_source(source)
 
-        # Create chunk dictionary of format, keyword : order by appearance
-        chunk_dict = {
-            'return': 'NOT_FOUND',
-            'for': 'NOT_FOUND',
-            'increment': 'NOT_FOUND',
-            # 'unfindable': 'NOT_FOUND'
-        }
-        for i, chunk in enumerate(chunks):
-            if 'return' in chunk:
-                chunk_dict['return'] = i
-            elif 'for' in chunk:
-                chunk_dict['for'] = i
-            elif '+' in chunk:
-                chunk_dict['increment'] = i
-        rules = [
-            # format: ({chunk key}, 'before' or 'after', {chunk key} or 'all')
-            ('return', 'after', 'for'),
-            ('increment', 'after', 'for')
-        ]
-        # Enforce rules:
-        # - Existence rule
-        feedback += self.existence_rule(chunk_dict)
-        # - Order rule
-        feedback += self.order_rule(chunk_dict, rules)
         
-        """
-        Maybe some application of LLMs would be possible here.
-        Like we could have a set of questions corresponding to each question,
-        like 'is the return variable incremented in the for loop'
-
-        and see how accurate that is.
-        Because writing it out like this is maybe not the most effective or efficient.
         
-        Also, this current approach will fail with more complicated functions, i think.
-        Like, you can't search properly for a 'for loop' if there are like 3 for loops
-        in the code, right? So something would have to change there.
-        """
         if '-' not in feedback:
             feedback += "lgtm."
         return feedback_start + feedback
 
-    def p0_q2(self, source):
-        feedback_start = "Dynamic feedback for p0_Q2 begins:\n"
+    def p0_q2(self, src):
+        feedback_start = "Dynamic feedback for p0_q2 begins:\n"
         feedback = "    -Analysis not yet implemented."
 
         return feedback_start + feedback
+    
+    def p1_q1(self, src):
+        feedback_start = "Dynamic feedback for p1_q1 begins:\n"
+        feedback = "    -Analysis not yet implemented."
+
+        return feedback_start + feedback
+    
+    # Helper Functions
+    def verify_dfs(src: str):
+        ast = SgRoot(src, "python")
+        root_node = ast.root()
+        out = root_node.text()
+        print("======dfs_src======\n" + out + "===================")
+
+        # # matches = node.find_all(pattern="print($A)")
+        # matches = root_node.find_all(pattern="$A", kind="call")
+        # # print(matches)
+
+        # for match in matches:
+        #     out = match.get_match('A').text()
+        #     print(out)
+
+        """
+        Run the validation check against all matching occurrences of the starter term.
+        If any one of them returns success, then return success.
+        If all of them fail, then how do we know which one to give feedback to?
+
+        Maybe it makes more sense to just try it against the first one.
+        Then we can easily give feedback against it, and it can also be easily understood by the students.
+        """
+
+        for_child = root_node.find(pattern="for")
+        print(for_child)
+        print("|-> " + for_child.text())
+
+        if_child = for_child.get_root().root().find(pattern="if")
+        print(if_child)
+        print("|-> " + if_child.text())
+
+        recurse_child = if_child.get_root().root().find(pattern="$A", kind="call")
+        print(recurse_child)
+        print("|-> " + recurse_child.text())
 
