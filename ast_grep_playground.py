@@ -72,13 +72,78 @@ def DFS(node: Node):
         if neighbour.visited is False:
             DFS(neighbour)
 
-dfs_src = '''
-def DFS(node: Node):
-    node.visited = True
-    for neighbour in node.neighbours:
-        if neighbour.visited is False:
-            DFS(neighbour)
-'''
+def verify_p0_q1(src: str):
+    """
+    Rules:
+    for
+        increment OR assignment
+    return
+    """
+    # instead of =, use regex to find = or +=
+    # =|+=
+    rule1 = ["for", "+="]
+    rule2 = ["return"]
+    # rule3 = ["should not match"]
+    rules = [rule1, rule2]
+    return enforce_ruleset(src, rules)
+
+def verify_dfs(src: str):
+    """
+    Rules:
+    for
+        if
+            recursion
+    """
+    # instead of =, use regex to find = or +=
+    # =|+=
+    rule1 = ["for", "if", "DFS"]
+    rules = [rule1]
+    return enforce_ruleset(src, rules)
+
+def enforce_ruleset(src: str, rules: list[list[str]]):
+        """
+        General function.
+        .find() function takes (one of) arguments:
+            -pattern: str
+            -kind: type
+            -regex: str
+        
+        we will update this to use regex in a bit; should be better i think
+        """
+
+        ast = SgRoot(src, "python")
+        root_node = ast.root()
+
+        # for each seperate rule sequence
+        for ruleset in rules:
+            print(f"====== matching against ruleset: {ruleset}")
+            # find local context for this ruleset
+            node = root_node.find(pattern= ruleset[0])
+
+            # we have now been setup within the context of this rule
+            # we search for our structure rules within 'node's context
+            ruleset_counter = 0
+            while ruleset_counter < len(ruleset) and node:
+                rule_str = ruleset[ruleset_counter]
+                # print("-----")
+                # print(f"node.text() = {node.text()}")
+                # print(f"rule_str = {rule_str}")
+
+                # TODO: replace with regex match
+                # match_node = node.find(pattern = rule_str)
+                # if match_node:
+                if rule_str in node.text():
+                    # print(f"|-> '{rule_str}' matched")
+                    # print(f"|-> '{match_node.text()}' matched")
+                    print(f"|-> '{node.text()}' matched")
+                    ruleset_counter += 1
+                node = node.next()
+            
+            if ruleset_counter >= len(ruleset):
+                print(f"Successfully matched against all rules in ruleset.")
+            else:
+                print(f"|-> ERROR '{ruleset[ruleset_counter]}' failed to match")
+
 
 p0_q1_src = '''
 def buyLotsOfFruit(orderList):
@@ -95,161 +160,43 @@ def buyLotsOfFruit(orderList):
 
     return totalCost
 '''
+# verify_p0_q1(p0_q1_src)
+# print()
+# print()
 
-# let's make it so that you can give:
-#   - src: the source code
-#   - rules: a list of lists, where each internal list is:
-#       - [a nested set of dependences]
-#
-#   then, it will parse the src into an AST
-#   then, for each internal list in rules:
-#       - do a whole little try loop for it
-
-def verify_p0_q1(src: str):
-        """
-        Rules:
-        for
-            increment OR assignment
-        return
-        """
-        # instead of =, use regex to find = or +=
-        # =|+=
-        rule1 = ["for", "="]  # should fail to find return
-        rule2 = ["return"]
-
-        # rule2 = ["return"]
-        rules = [rule1]
-        return enforce_ruleset(src, rules)
-
-def enforce_ruleset(src: str, rules: list[list[str]]):
-        """
-        General function.
-        .find() function takes arguments:
-            -pattern: str
-            -kind: type
-            -regex: str
-            should use regex ok
-        
-        there are some interesting functions, such as 
-        .inside()
-        .has()
-        .precedes()
-        .follows()
-        What exactly do they do?
-        """
-        ast = SgRoot(src, "python")
-        root_node = ast.root()
-        for rule_group in rules:
-            # try:
-            #     root = ast.root().find(pattern=rule_group[0])
-            #     print("|-> " + root.text())
-            #     cur = root
-            #     child = None
-            #     for rule in rule_group[1:]:
-            #         child = cur.get_root().root().find(pattern=rule)
-            #         print("|-> " + child.text())
-            #         cur = child
-            # except:
-            #     print("ERROR!! Some structure part not detected!")
-            print(root_node.child(0).text())
-
-            # try:
-            for_child = root_node.find(pattern="for")
-            # for_child = root_node.find(regex="[for]")
-            print("|-> " + for_child.text())
-            # print("|-> " + for_child.get_match('A').text())
-
-            # assign_child = for_child.next()
-            assign_child = for_child.next()
-            # assign_child = for_child.get_root().root().find(pattern="=")
-            # assign_child = for_child.find(pattern="=")
-            print("|-> " + assign_child.text())
-
-            # for_children = for_child.next_all()
-            # print(for_children)
-
-            """
-            1. create a new subtree using SgRoot() including all the code of the for loop
-            2. find the correct way to do a search within a new node's context
-                (the new node not being the root)
-            3. node.next() or node.next_all(), and i think you could use that to look for the next dependency
-
-            iterate through node.next for a given node to check its context
-                -look at the node to see if it's satisfies the rule you're looking for
-                -if it does, update your rule to the next one, and now look in
-                 this new node's children
-
-            """
-
-
-
-            # # return_child = root_node.find(pattern="return")
-            # return_child = assign_child.find(pattern="return")
-            # print("|-> " + return_child.text())
-            # # ^write a function to generalize this kind of thing?
-            # # would pass in: (parent node, pattern)
-            # # returns: ('child node' or maybe 'None')
-            # # just a cute little abstraction helper function
-
-            # except:
-            #     print("ERROR!! Some structure part not detected!")
-        # could add variables in the 'try' section to set bools for each child
-        # then could print out a list here with each expected child....T/F
-
-        # feedback_start = "Dynamic feedback for p0_q1 begins:\n"
-        # feedback = ""
-
-        # instead of print(), switch to just add to feedback string
-        # ok boss
-
-        # if '-' not in feedback:
-        #     feedback += "lgtm."
-        # return feedback_start + feedback
-
-verify_p0_q1(p0_q1_src)
-
-def verify_dfs(src: str):
-    ast = SgRoot(src, "python")
-    root_node = ast.root()
-    out = root_node.text()
-    print("======dfs_src======\n" + out + "===================")
-
-    # # matches = node.find_all(pattern="print($A)")
-    # matches = root_node.find_all(pattern="$A", kind="call")
-    # # print(matches)
-
-    # for match in matches:
-    #     out = match.get_match('A').text()
-    #     print(out)
-
-    """
-    Run the validation check against all matching occurrences of the starter term.
-    If any one of them returns success, then return success.
-    If all of them fail, then how do we know which one to give feedback to?
-
-    Maybe it makes more sense to just try it against the first one.
-    Then we can easily give feedback against it, and it can also be easily understood by the students.
-    """
-
-    for_child = root_node.find(pattern="for")
-    print(for_child)
-    print("|-> " + for_child.text())
-
-    if_child = for_child.get_root().root().find(pattern="if")
-    print(if_child)
-    print("|-> " + if_child.text())
-
-    recurse_child = if_child.get_root().root().find(pattern="$A", kind="call")
-    print(recurse_child)
-    print("|-> " + recurse_child.text())
-    
-    # root_children = root_node.children()
-    # ch_dfs_def = root_children[0].get_root().root()
-    # print(ch_dfs_def.text())
-
+dfs_src = '''
+def DFS(node: Node):
+    node.visited = True
+    for neighbour in node.neighbours:
+        if neighbour.visited is False:
+            DFS(neighbour)
+'''
 # verify_dfs(dfs_src)
 
+# rule1 = ["for", "if", "DFS"]
+ast = SgRoot(dfs_src, "python")
+root_node = ast.root()
+a = root_node.find(pattern="for")
+while a:
+    print(f"-> {a.text()}")
+    print(f"{a.children()}") 
+    a = a.next()
+
+print()
+print()
+b = root_node.find(pattern="if")
+while b:
+    print(f"-> {b.text()}")
+    print(f"{b.children()}")
+    b = b.next()
+
+
 """
-Continued concerns:
+current issue:
+-in DFS, the whole if statement is being treated as a single node, causing a fail. 
+^unexpected
+
+based on the above test, we can see that the if statement and its consequent is sometimes parsed as a single node in the first example.
+whereas in the second example it is parsed as two nodes.
 
 """
