@@ -86,7 +86,7 @@ class Analysis:
         rules = [loop_increment_rule, return_rule]
         return self.enforce_ruleset(src, rules)
 
-    def verify_p0_q2(self, src):
+    def verify_p0_q2(self, src: str):
         """
         'shopSmart.py'
         Rules:

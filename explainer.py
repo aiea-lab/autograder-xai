@@ -31,7 +31,7 @@ class Explainer:
         # Dynamic explanation
         key = f"{self.assignment}_{self.question}"
         dynamic_exp = self.analyser.get_feedback(key, source)
-        return default + ">\n" + dynamic_exp
+        return default + " >\n" + dynamic_exp
 
         # Static explanation
         # return default + "\n> " + self.get_explanation(issue_id)
