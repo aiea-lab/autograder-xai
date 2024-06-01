@@ -11,7 +11,7 @@ class Analysis:
         # format: 'key' : 'function'
         self.function_links = {
             'p0_q1' : self.verify_p0_q1,
-            'p0_q2' : self.p0_q2
+            'p0_q2' : self.verify_p0_q2
         }
     def get_feedback(self, key, source):
         """
@@ -74,79 +74,27 @@ class Analysis:
     # Question Analysis Functions
     def verify_p0_q1(self, src: str):
         """
+        'buyLotsOfFruit.py'
         Rules:
         for
             increment OR assignment
         return
         """
-        # instead of =, use regex to find = or +=
-        # =|+=
+        # TODO: replace string patterns with regex patterns
         loop_increment_rule = ["for", "+="]
         return_rule = ["return"]
         rules = [loop_increment_rule, return_rule]
         return self.enforce_ruleset(src, rules)
 
-    # def p0_q1(self, src):
-    #     """
-    #     Rules:
-    #     for
-    #         increment OR assignment
-    #     return
-    #     """
-    #     feedback_start = "Dynamic feedback for p0_q1 begins:\n"
-    #     feedback = ""
-
-        
-        
-    #     if '-' not in feedback:
-    #         feedback += "lgtm."
-    #     return feedback_start + feedback
-
-    def p0_q2(self, src):
-        feedback_start = "Dynamic feedback for p0_q2 begins:\n"
-        feedback = "    -Analysis not yet implemented."
-
-        return feedback_start + feedback
-    
-    def p1_q1(self, src):
-        feedback_start = "Dynamic feedback for p1_q1 begins:\n"
-        feedback = "    -Analysis not yet implemented."
-
-        return feedback_start + feedback
-    
-    # Helper Functions
-    def verify_dfs(src: str):
-        ast = SgRoot(src, "python")
-        root_node = ast.root()
-        out = root_node.text()
-        print("======dfs_src======\n" + out + "===================")
-
-        # # matches = node.find_all(pattern="print($A)")
-        # matches = root_node.find_all(pattern="$A", kind="call")
-        # # print(matches)
-
-        # for match in matches:
-        #     out = match.get_match('A').text()
-        #     print(out)
-
+    def verify_p0_q2(self, src):
         """
-        Run the validation check against all matching occurrences of the starter term.
-        If any one of them returns success, then return success.
-        If all of them fail, then how do we know which one to give feedback to?
-
-        Maybe it makes more sense to just try it against the first one.
-        Then we can easily give feedback against it, and it can also be easily understood by the students.
+        'shopSmart.py'
+        Rules:
+        for
+            if
+        return
         """
-
-        for_child = root_node.find(pattern="for")
-        print(for_child)
-        print("|-> " + for_child.text())
-
-        if_child = for_child.get_root().root().find(pattern="if")
-        print(if_child)
-        print("|-> " + if_child.text())
-
-        recurse_child = if_child.get_root().root().find(pattern="$A", kind="call")
-        print(recurse_child)
-        print("|-> " + recurse_child.text())
-
+        loop_compare_rule = ["for", "if", "="]
+        return_rule = ["return"]
+        rules = [loop_compare_rule, return_rule]
+        return self.enforce_ruleset(src, rules)

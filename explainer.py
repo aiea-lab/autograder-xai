@@ -14,7 +14,7 @@ class Explainer:
         self.question = question
         self.messages = []
 
-        # Spreadsheet (static explanations)
+        # Read in spreadsheet (static explanations)
         self.data = {}
         with open(csv_file, newline='') as csvfile:
             reader = csv.reader(csvfile)
@@ -23,8 +23,7 @@ class Explainer:
                 val = row[5]
                 self.data[key] = val
         
-        # Analysis (dynamic explanations)
-        
+        # Analysis (structural explanations)
         self.analyser = analysisClass.Analysis()
 
     # need to also implement the some_info input
@@ -32,12 +31,11 @@ class Explainer:
         # Dynamic explanation
         key = f"{self.assignment}_{self.question}"
         dynamic_exp = self.analyser.get_feedback(key, source)
-        return default + "\n> " + dynamic_exp
+        return default + ">\n" + dynamic_exp
 
         # Static explanation
         # return default + "\n> " + self.get_explanation(issue_id)
 
-    
     def get_explanation(self, issue_id):
         key = f"{self.assignment}_{self.question}_{issue_id}"
         if key in self.data:
