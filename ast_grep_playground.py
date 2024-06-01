@@ -101,49 +101,52 @@ def verify_dfs(src: str):
     return enforce_ruleset(src, rules)
 
 def enforce_ruleset(src: str, rules: list[list[str]]):
-        """
-        General function.
-        .find() function takes (one of) arguments:
-            -pattern: str
-            -kind: type
-            -regex: str
+    """
+    General function.
+    .find() function takes (one of) arguments:
+        -pattern: str
+        -kind: type
+        -regex: str
+    
+    we will update this to use regex in a bit; should be better i think
+    """
+
+    ast = SgRoot(src, "python")
+    root_node = ast.root()
+    report_string = ""
+
+    # for each seperate rule sequence
+    for ruleset in rules:
+        report_string += (f"=== matching against ruleset: {ruleset}\n")
+        # find local context for this ruleset
+        node = root_node.find(pattern= ruleset[0])
+
+        # we have now been setup within the context of this rule
+        # we search for our structure rules within 'node's context
+        ruleset_counter = 0
+        while node:
+            # print("-----")
+            # print(f"node.text() = {node.text()}")
+            # print(f"rule_str = {rule_str}")
+
+            # TODO: replace with regex match
+            # match_node = node.find(pattern = rule_str)
+            # if match_node:
+
+            # switched to 'while' over 'if' because of inconsistent node parsing
+            while ruleset_counter < len(ruleset) and ruleset[ruleset_counter] in node.text():
+                # print(f"|-> '{match_node.text()}' matched")
+                # print(f"|-> '{ruleset[ruleset_counter]}' matched")
+                report_string += (f"|-> '{node.text()}' matched\n")
+                ruleset_counter += 1
+            node = node.next()
         
-        we will update this to use regex in a bit; should be better i think
-        """
-
-        ast = SgRoot(src, "python")
-        root_node = ast.root()
-
-        # for each seperate rule sequence
-        for ruleset in rules:
-            print(f"====== matching against ruleset: {ruleset}")
-            # find local context for this ruleset
-            node = root_node.find(pattern= ruleset[0])
-
-            # we have now been setup within the context of this rule
-            # we search for our structure rules within 'node's context
-            ruleset_counter = 0
-            while ruleset_counter < len(ruleset) and node:
-                rule_str = ruleset[ruleset_counter]
-                # print("-----")
-                # print(f"node.text() = {node.text()}")
-                # print(f"rule_str = {rule_str}")
-
-                # TODO: replace with regex match
-                # match_node = node.find(pattern = rule_str)
-                # if match_node:
-                if rule_str in node.text():
-                    # print(f"|-> '{rule_str}' matched")
-                    # print(f"|-> '{match_node.text()}' matched")
-                    print(f"|-> '{node.text()}' matched")
-                    ruleset_counter += 1
-                node = node.next()
-            
-            if ruleset_counter >= len(ruleset):
-                print(f"Successfully matched against all rules in ruleset.")
-            else:
-                print(f"|-> ERROR '{ruleset[ruleset_counter]}' failed to match")
-
+        if ruleset_counter >= len(ruleset):
+            report_string += (f"Successfully matched against all rules in ruleset\n")
+        else:
+            report_string += (f"|-> ERROR '{ruleset[ruleset_counter]}' failed to match\n")
+    
+    return report_string
 
 p0_q1_src = '''
 def buyLotsOfFruit(orderList):
@@ -160,9 +163,8 @@ def buyLotsOfFruit(orderList):
 
     return totalCost
 '''
-# verify_p0_q1(p0_q1_src)
-# print()
-# print()
+a = verify_p0_q1(p0_q1_src)
+print(a)
 
 dfs_src = '''
 def DFS(node: Node):
@@ -171,32 +173,5 @@ def DFS(node: Node):
         if neighbour.visited is False:
             DFS(neighbour)
 '''
-# verify_dfs(dfs_src)
-
-# rule1 = ["for", "if", "DFS"]
-ast = SgRoot(dfs_src, "python")
-root_node = ast.root()
-a = root_node.find(pattern="for")
-while a:
-    print(f"-> {a.text()}")
-    print(f"{a.children()}") 
-    a = a.next()
-
-print()
-print()
-b = root_node.find(pattern="if")
-while b:
-    print(f"-> {b.text()}")
-    print(f"{b.children()}")
-    b = b.next()
-
-
-"""
-current issue:
--in DFS, the whole if statement is being treated as a single node, causing a fail. 
-^unexpected
-
-based on the above test, we can see that the if statement and its consequent is sometimes parsed as a single node in the first example.
-whereas in the second example it is parsed as two nodes.
-
-"""
+b = verify_dfs(dfs_src)
+print(b)

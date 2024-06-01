@@ -10,119 +10,97 @@ class Analysis:
         """
         # format: 'key' : 'function'
         self.function_links = {
-            'p0_q1' : self.p0_q1,
+            'p0_q1' : self.verify_p0_q1,
             'p0_q2' : self.p0_q2
         }
     def get_feedback(self, key, source):
         """
         The parameter 'key' tells us what analysis function to run
-        The parameter 'source' is the code
-        
-        Currently set to always use p0_Q1() regardless
+        The parameter 'source' is the submission code
         """
         if key in self.function_links:
             return self.function_links[key](source)
-        else:
-            return "Dynamic feedback implementation not found."
-        # return self.p0_Q1(source)
-        # feedback = f"dynamic feedback for {assignment} and {question}"
-        # return feedback
+        return "Dynamic feedback implementation not found."
 
     # Helper Functions
-    def chunk_source(self, source):
+    def enforce_ruleset(self, src: str, rules: list[list[str]]):
         """
-        Steps:
-        - break single source string into a list of lines
-        - remove all blank lines
-        - remove all single line comments
-        - remove all multiline comments 
-
-        what does string.strip() do?
-        """
-        chunks = source.split("\n")
-
-        # remove all whitespace blank lines
-        chunks = [chunk for chunk in chunks if len(chunk) > 0]
-
-        # remove all single line comments
-        chunks = [chunk for chunk in chunks if '#' not in chunk]
+        General function.
+        .find() function takes (one of) arguments:
+            -pattern: str
+            -kind: type
+            -regex: str
         
-        # remove all multiline comments
-        # find an opening """, find a closing """
-        # slice away all the lines between them
-        on = False
-        start = 0
-        end = 0
-        i = 0
-        while i < len(chunks):
-        # for i, chunk in enumerate(chunks):
-            chunk = chunks[i]
-            if '"""' in chunk:
-                on = not on
-
-                # If on is true, then we mark start, but should not cut yet
-                if on:
-                    start = i
-
-                # If on is false, that means we should cut
-                else:
-                    end = i + 1
-                    chunks = chunks[0:start] + chunks[end:]
-            i += 1
-
-        return chunks 
-
-    def existence_rule(self, chunk_dict):
+        we will update this to use regex in a bit; should be better i think
         """
-        Enforces that every chunk was found in the answer
-        """
-        feedback = ""
-        for key, value in chunk_dict.items():
-            if value == 'NOT_FOUND':
-                feedback += "   -" + f'{key} chunk not found in source.\n'
-        return feedback
-    
-    def order_rule(self, chunk_dict, rules):
-            """
-            Enforces rules, adding a message to feedback for each violated rule.
-            Rules format: ({chunk key}, 'before' or 'after', {chunk key} or 'all')
-            """
-            feedback = ""
-            for rule in rules:
-                prior, condition, post = rule
-                if chunk_dict[prior] == 'NOT_FOUND' or chunk_dict[post] == 'NOT_FOUND':
-                    continue
 
-                if condition == 'before':
-                    if chunk_dict[prior] > chunk_dict[post]:
-                        feedback += "   -'" + " ".join(rule) + "' rule violated.\n"
-                    else:
-                        feedback += "   +'" + " ".join(rule) + "' rule enforced.\n"
+        ast = SgRoot(src, "python")
+        root_node = ast.root()
+        report_string = ""
 
-                elif condition == 'after':
-                    if chunk_dict[prior] < chunk_dict[post]:
-                        feedback += "   -'" + " ".join(rule) + "' rule violated.\n"
-                    else:
-                        feedback += "   +'" + " ".join(rule) + "' rule enforced.\n"
+        # for each seperate rule sequence
+        for ruleset in rules:
+            report_string += (f"=== matching against ruleset: {ruleset}\n")
+            # find local context for this ruleset
+            node = root_node.find(pattern= ruleset[0])
+
+            # we have now been setup within the context of this rule
+            # we search for our structure rules within 'node's context
+            ruleset_counter = 0
+            while node:
+                # print("-----")
+                # print(f"node.text() = {node.text()}")
+                # print(f"rule_str = {rule_str}")
+
+                # TODO: replace with regex match
+                # match_node = node.find(pattern = rule_str)
+                # if match_node:
+
+                # switched to 'while' over 'if' because of inconsistent node parsing
+                while ruleset_counter < len(ruleset) and ruleset[ruleset_counter] in node.text():
+                    # print(f"|-> '{match_node.text()}' matched")
+                    # print(f"|-> '{ruleset[ruleset_counter]}' matched")
+                    report_string += (f"|-> '{node.text()}' matched\n")
+                    ruleset_counter += 1
+                node = node.next()
             
-            return feedback
+            if ruleset_counter >= len(ruleset):
+                report_string += (f"Successfully matched against all rules in ruleset\n")
+            else:
+                report_string += (f"|-> ERROR '{ruleset[ruleset_counter]}' failed to match\n")
+        
+        return report_string
 
     # Question Analysis Functions
-    def p0_q1(self, src):
+    def verify_p0_q1(self, src: str):
         """
         Rules:
         for
             increment OR assignment
         return
         """
-        feedback_start = "Dynamic feedback for p0_q1 begins:\n"
-        feedback = ""
+        # instead of =, use regex to find = or +=
+        # =|+=
+        loop_increment_rule = ["for", "+="]
+        return_rule = ["return"]
+        rules = [loop_increment_rule, return_rule]
+        return self.enforce_ruleset(src, rules)
+
+    # def p0_q1(self, src):
+    #     """
+    #     Rules:
+    #     for
+    #         increment OR assignment
+    #     return
+    #     """
+    #     feedback_start = "Dynamic feedback for p0_q1 begins:\n"
+    #     feedback = ""
 
         
         
-        if '-' not in feedback:
-            feedback += "lgtm."
-        return feedback_start + feedback
+    #     if '-' not in feedback:
+    #         feedback += "lgtm."
+    #     return feedback_start + feedback
 
     def p0_q2(self, src):
         feedback_start = "Dynamic feedback for p0_q2 begins:\n"
