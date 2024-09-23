@@ -23,7 +23,7 @@ class Analysis:
         return self.enforce_ruleset(src, rules)
     
     def verify_dfs(self, src: str) -> str:
-        recursive_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Call]  # ast.Call might be wrong though?
+        recursive_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Call]
         return_rule = [ast.Return]
         rules = [recursive_rule, return_rule]
         return self.enforce_ruleset(src, rules)
@@ -35,14 +35,14 @@ class Analysis:
 
     #   Assignment 2
     def verify_minimax(self, src: str) -> str:
-        max_rule = [ast.FunctionDef, ast.If, ast.For, ast.IF, ast.Return]
-        min_rule = [ast.FunctionDef, ast.If, ast.For, ast.IF, ast.Return]
+        max_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Return]
+        min_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Return]
         return_rule = [ast.Return]
         rules = [max_rule, min_rule, return_rule]
         return self.enforce_ruleset(src, rules)
     
     def verify_expectimax(self, src: str) -> str:
-        max_rule = [ast.FunctionDef, ast.If, ast.For, ast.IF, ast.Return]
+        max_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Return]
         chance_rule = [ast.FunctionDef, ast.If, ast.For, ast.Return]
         return_rule = [ast.Return]
         rules = [max_rule, chance_rule, return_rule]
