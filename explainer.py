@@ -65,21 +65,27 @@ class Analysis:
         Confirms and rejects each list of rules separately.
         """
 
-        def check_local_context(local_context_node, rules) -> str:
+        message = []
+
+        def check_local_context(local_context_node, rules) -> bool:
+            nonlocal message
             if len(rules) == 0:
-                return "Structure fully matched!"
+                message.append("—local structure fully matched!\n")
+                return True
 
             rule_counter = 0
             for node in ast.walk(local_context_node):
                 # if node matches structural requirement, then increment rule counter
                 if isinstance(node, rules[rule_counter]):
-                    print(f"matching rule {rules[rule_counter]} on node {node}")
+                    message.append(f"matching rule {rules[rule_counter]} on node {node}")
                     rule_counter += 1
                     if rule_counter >= len(rules):
-                        return "Structure fully matched!"
+                        message.append("—local structure fully matched!\n")
+                        return True
                 # if not, do nothing
 
-            return (f"Failed to match structure on rule {rules[rule_counter]}")
+            message.append(f"—failed to match local structure on rule {rules[rule_counter]}\n")
+            return False
 
         try:
             root = ast.parse(src)
@@ -88,37 +94,39 @@ class Analysis:
             top_level_context_nodes = root.body[0].body
             # try to find the correct local context to match the first rule in the ruleset
             
-            fully_matched = True
-            top_list = []
-            failed = 0
-            for ruleset in rules:
+            fully_matched = 0
+            top_list = []  # used to keep track of what top nodes have already been matched against before
+            for i, ruleset in enumerate(rules):
+                message.append(f"** trying to match ruleset {i+1}/{len(rules)}...")
                 top_context_rule = ruleset[0]
                 check = [isinstance(node, top_context_rule) for node in top_level_context_nodes]
+                # print(check)
 
                 if not any(check):
-                    print("Failed to match top level node")
-                    failed += 1
+                    fully_matched = False
+                    message.append(f"—failed to match top level node")
                     top_level_context_nodes = top_level_context_nodes[1:]
                     continue
-
+                
                 for top_node in top_level_context_nodes:
-                    if top_node not in top_list:        
+                    if top_node not in top_list:  # prevent matching two rulesets against the same local context
                         if isinstance(top_node, top_context_rule):
-                            print(f"{top_node}: Top node matched, checking local context for remaining ruleset")
+                            message.append(f"matching top node {top_node}: checking local context for more rules...")
                             result = check_local_context(top_node, ruleset[1:])
-                            if "Structure fully matched!" in result:
-                                print("——Structure fully matched!")
+                            if result:
+                                fully_matched += 1
                                 index = top_level_context_nodes.index(top_node)
                                 top_list.append(index)
                                 break
-                            else:
-                                fully_matched = False
                                 
-            if failed >= 1:
-                return "***———</3———FAILED TO MATCH ALL RULES———</3———***"
-            elif fully_matched:
-                return "***———<3———EVERYTHING MATCHED———<3———***"
+        
+            message.append(f"({fully_matched} / {len(rules)} rules matched)")
+            if fully_matched < len(rules):
+                message.append("***———</3———FAILED TO MATCH ALL RULES———</3———***")
+            else:
+                message.append("***———<3———EVERYTHING MATCHED———<3———***")
 
-            return "Failed to match any ruleset"
+            return "\n".join(message)
         except:
-            return "Failed to parse source"
+            print(message)
+            return "Exception, failed to parse source (probably)."
