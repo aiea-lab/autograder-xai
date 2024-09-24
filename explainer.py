@@ -66,11 +66,12 @@ class Analysis:
         """
 
         message = []
+        message.append("\n== Structural Explanation")
 
         def check_local_context(local_context_node, rules) -> bool:
             nonlocal message
             if len(rules) == 0:
-                message.append("-local structure fully matched!")
+                message.append("-local structure trivially matched!")
                 return True
 
             rule_counter = 0
@@ -120,7 +121,7 @@ class Analysis:
                                 break
                                 
         
-            message.append(f"\n({fully_matched} / {len(rules)} rules matched)")
+            message.append(f"\n({fully_matched}/{len(rules)} rules matched)")
             if fully_matched < len(rules):
                 message.append("***---</3---FAILED TO MATCH ALL RULES---</3---***")
             else:
