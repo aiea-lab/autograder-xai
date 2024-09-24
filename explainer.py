@@ -111,7 +111,7 @@ class Analysis:
                 for top_node in top_level_context_nodes:
                     if top_node not in top_list:  # prevent matching two rulesets against the same local context
                         if isinstance(top_node, top_context_rule):
-                            message.append(f"matching top node {top_node}: checking local context for more rules...")
+                            message.append(f"matching top node {top_node}: entering context...")
                             result = check_local_context(top_node, ruleset[1:])
                             if result:
                                 fully_matched += 1
