@@ -5,7 +5,7 @@ class Analysis:
         self.function_links = {
             # assignment 1
             'bfs' : self.verify_bfs,
-            'dfs' : self.verify_bfs,
+            'dfs' : self.verify_dfs,
             'a_star' : self.verify_a_star,
 
             # assignment 2
@@ -99,12 +99,12 @@ class Analysis:
             for i, ruleset in enumerate(rules):
                 message.append(f"** trying to match ruleset {i+1}/{len(rules)}...")
                 top_context_rule = ruleset[0]
+
                 check = [isinstance(node, top_context_rule) for node in top_level_context_nodes]
                 # print(check)
-
+                # print(top_context_rule)
                 if not any(check):
-                    fully_matched = False
-                    message.append(f"-failed to match top level node")
+                    message.append(f"-no top level node matches for rule {top_context_rule}")
                     top_level_context_nodes = top_level_context_nodes[1:]
                     continue
                 
@@ -120,7 +120,7 @@ class Analysis:
                                 break
                                 
         
-            message.append(f"({fully_matched} / {len(rules)} rules matched)")
+            message.append(f"\n({fully_matched} / {len(rules)} rules matched)")
             if fully_matched < len(rules):
                 message.append("***---</3---FAILED TO MATCH ALL RULES---</3---***")
             else:
