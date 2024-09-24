@@ -70,7 +70,7 @@ class Analysis:
         def check_local_context(local_context_node, rules) -> bool:
             nonlocal message
             if len(rules) == 0:
-                message.append("-local structure fully matched!\n")
+                message.append("-local structure fully matched!")
                 return True
 
             rule_counter = 0
@@ -80,11 +80,11 @@ class Analysis:
                     message.append(f"matching rule {rules[rule_counter]} on node {node}")
                     rule_counter += 1
                     if rule_counter >= len(rules):
-                        message.append("-local structure fully matched!\n")
+                        message.append("-local structure fully matched!")
                         return True
                 # if not, do nothing
 
-            message.append(f"-failed to match local structure on rule {rules[rule_counter]}\n")
+            message.append(f"-failed to match local structure on rule {rules[rule_counter]}")
             return False
 
         try:
@@ -97,7 +97,7 @@ class Analysis:
             fully_matched = 0
             top_list = []  # used to keep track of what top nodes have already been matched against before
             for i, ruleset in enumerate(rules):
-                message.append(f"** trying to match ruleset {i+1}/{len(rules)}...")
+                message.append(f"\n** trying to match ruleset {i+1}/{len(rules)}...")
                 top_context_rule = ruleset[0]
 
                 check = [isinstance(node, top_context_rule) for node in top_level_context_nodes]
@@ -120,7 +120,7 @@ class Analysis:
                                 break
                                 
         
-            message.append(f"({fully_matched} / {len(rules)} rules matched)")
+            message.append(f"\n({fully_matched} / {len(rules)} rules matched)")
             if fully_matched < len(rules):
                 message.append("***---</3---FAILED TO MATCH ALL RULES---</3---***")
             else:
