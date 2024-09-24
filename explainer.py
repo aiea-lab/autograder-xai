@@ -70,7 +70,7 @@ class Analysis:
         def check_local_context(local_context_node, rules) -> bool:
             nonlocal message
             if len(rules) == 0:
-                message.append("—local structure fully matched!\n")
+                message.append("-local structure fully matched!\n")
                 return True
 
             rule_counter = 0
@@ -80,11 +80,11 @@ class Analysis:
                     message.append(f"matching rule {rules[rule_counter]} on node {node}")
                     rule_counter += 1
                     if rule_counter >= len(rules):
-                        message.append("—local structure fully matched!\n")
+                        message.append("-local structure fully matched!\n")
                         return True
                 # if not, do nothing
 
-            message.append(f"—failed to match local structure on rule {rules[rule_counter]}\n")
+            message.append(f"-failed to match local structure on rule {rules[rule_counter]}\n")
             return False
 
         try:
@@ -104,7 +104,7 @@ class Analysis:
 
                 if not any(check):
                     fully_matched = False
-                    message.append(f"—failed to match top level node")
+                    message.append(f"-failed to match top level node")
                     top_level_context_nodes = top_level_context_nodes[1:]
                     continue
                 
@@ -122,9 +122,9 @@ class Analysis:
         
             message.append(f"({fully_matched} / {len(rules)} rules matched)")
             if fully_matched < len(rules):
-                message.append("***———</3———FAILED TO MATCH ALL RULES———</3———***")
+                message.append("***---</3---FAILED TO MATCH ALL RULES---</3---***")
             else:
-                message.append("***———<3———EVERYTHING MATCHED———<3———***")
+                message.append("***---<3---EVERYTHING MATCHED---<3---***")
 
             return "\n".join(message)
         except:
