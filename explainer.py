@@ -97,7 +97,9 @@ class Analysis:
             fully_matched = 0
             top_list = []  # used to keep track of what top nodes have already been matched against before
             for i, ruleset in enumerate(rules):
-                message.append(f"\n** trying to match ruleset {i+1}/{len(rules)}...")
+                if i > 0:
+                    message.append("")
+                message.append(f"** trying to match ruleset {i+1}/{len(rules)}...")
                 top_context_rule = ruleset[0]
 
                 check = [isinstance(node, top_context_rule) for node in top_level_context_nodes]
