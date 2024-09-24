@@ -120,12 +120,12 @@ class Analysis:
                                 break
                                 
         
-            message.append(f"\n({fully_matched} / {len(rules)} rules matched)")
+            message.append(f"({fully_matched} / {len(rules)} rules matched)")
             if fully_matched < len(rules):
                 message.append("***---</3---FAILED TO MATCH ALL RULES---</3---***")
             else:
                 message.append("***---<3---EVERYTHING MATCHED---<3---***")
-
+            message.append("")
             return "\n".join(message)
         except:
             print(message)
