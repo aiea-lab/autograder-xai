@@ -129,5 +129,6 @@ class Analysis:
             message.append("")
             return "\n".join(message)
         except:
-            print(message)
-            return "Exception, failed to parse source (probably)."
+            message.append("")
+            message.append("Exception thrown during structural rule-checking after grading")
+            return "\n".join(message)
