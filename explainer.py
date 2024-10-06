@@ -9,8 +9,8 @@ class Analysis:
             'a_star' : self.verify_a_star,
 
             # assignment 2
-            'minimax' : self.verify_minimax,
-            'expectimax' : self.verify_expectimax
+            'minimax' : self.verify_minimax_or_expectimax,
+            'expectimax' : self.verify_minimax_or_expectimax
 
             # ...
         }
@@ -34,18 +34,11 @@ class Analysis:
         return self.enforce_ruleset(src, rules)
 
     #   Assignment 2
-    def verify_minimax(self, src: str) -> str:
-        max_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Return]
-        min_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Return]
+    def verify_minimax_or_expectimax(self, src: str) -> str:
+        helper_rule = [ast.FunctionDef, ast.If, ast.If, ast.For, ast.Return]
+        top_rule = [ast.For, ast.If]
         return_rule = [ast.Return]
-        rules = [max_rule, min_rule, return_rule]
-        return self.enforce_ruleset(src, rules)
-    
-    def verify_expectimax(self, src: str) -> str:
-        max_rule = [ast.FunctionDef, ast.If, ast.For, ast.If, ast.Return]
-        chance_rule = [ast.FunctionDef, ast.If, ast.For, ast.Return]
-        return_rule = [ast.Return]
-        rules = [max_rule, chance_rule, return_rule]
+        rules = [helper_rule, top_rule, return_rule]
         return self.enforce_ruleset(src, rules)
 
     # General Functions
