@@ -1,0 +1,13 @@
+{
+    "id": "p1",
+    "static-files": [
+        "grader.py",
+        {
+            "type": "git",
+            "path": "https://github.com/aiea-lab/autograder-xai.git",
+            "reference": "48f6898",
+            "dest": "autograderxai"
+        }
+    ],
+    "image": "edulinq/grader.python-alpine"
+}
