@@ -1,4 +1,5 @@
 import sys
+import inspect
 
 # from ipynb.fs.full.practical import frame_printing
 from ipynb.fs.full.practical import *
@@ -12,7 +13,7 @@ class Grader():
     def test(self, case_str, case_sol):
         """ Given student code, test and return answer """
         self.c += 1
-        case_ans = frame_printing(case_str)
+        case_ans = frame_printing_solution(case_str)
         # case_ans = frame_printing_solution(case_str)
 
         ret_str = f"== Case {self.c}: "
@@ -20,12 +21,13 @@ class Grader():
             # Nothing more to be said, answer was correct.
             return ret_str + "correct answer"
         else:
-            # Ping explanation stuff.
-            ret_str =+ "incorrect answer"
+            ret_str += "incorrect answer"
 
-            feedback_str = self.feedback(case_ans)
+            # Offer only error-based explanation here
+            feedback_str = self.error_based_feedback(case_ans)
+            return ret_str + feedback_str
     
-    def feedback(self, case_ans):
+    def error_based_feedback(self, case_ans):
         """ Given student answer, return targeted feedback. """
 
         """
@@ -40,13 +42,23 @@ class Grader():
         * when they get a case wrong, we should tell them what it was
         """
 
-        # also need to hook in the main explanation stuff here too
-        # just copy it in here
+        return "\nError-based feedback dummy str"
+        
+
+    def structural_exp(self):
+        """ Takes in student src code and matches it against the expected ruleset."""
+        student_src = inspect.getsource(frame_printing)
+
+        # need to hook in the main explanation stuff here too
+        # probably worth partially rewriting too, since it's gotten pretty messy.
+        # update or make a new 'explainer.py' file to be included just for this exercise.
+        return "\n== structural feedback dummy str"
 
 
 def main():
     g = Grader()
 
+    # Check answers and offer error-based exp
     case1_str = "Hello World in a Frame"
     case1_sol = """*********\n* Hello *\n* World *\n* in    *\n* a     *\n* Frame *\n*********"""
     print(g.test(case1_str, case1_sol))
@@ -58,6 +70,10 @@ def main():
     case3_str = "A Few Words Here \n And There Work Things Out"
     case3_sol = """**********\n* A      *\n* Few    *\n* Words  *\n* Here   *\n* And    *\n* There  *\n* Work   *\n* Things *\n* Out    *\n**********"""  
     print(g.test(case3_str, case3_sol))
+
+    # Offer structural exp
+    structural_feedback_str = g.structural_exp()
+    print(structural_feedback_str)
 
 if (__name__ == '__main__'):
     sys.exit(main())
