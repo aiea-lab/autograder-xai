@@ -1,44 +1,42 @@
 from explainer import Analysis
 
-src='''def BFS(board: chess.Board, goal_position: chess.Square):
-    """
-    This function implements the breath first search algorithm
-    
-    Parameters:
-    - board: the chess board that the knight is moving upon
-    
-    Returns:
-    A list containing the visited tile values in the order they were visited with starting tile
-    always being the first tile and the goal tile always being the last tile
-    """
-    visited_nodes_in_order = []
+src='''def frame_printing_solution(slogan: str) -> str:
+    # First, split the words string into a list of strings
+    words = slogan.split(' ')
+    # print(words)
 
-    # YOUR CODE HERE
-    seen_nodes = set()
-    seen_nodes.add(chess.A1)
-    queue = []
-    queue.append(chess.A1)
+    # Next, get the length of the longest word in words.
+    longest_word_length = len(max(words, key=len))
+    # print(longest_word_length)
 
-    while queue:
-        curr_pos = queue.pop(0)
-        visited_nodes_in_order.append(curr_pos)
-        
-        board.set_piece_at(curr_pos, chess.Piece(chess.KNIGHT, chess.WHITE))
-        # print("*****")  
-        # print(board)
-        if goal_reached(board, goal_position):
-            break
+    # Print out the first border line
+    top_or_bottom_border = "**" + ("*") + "**"
+    # print(top_or_bottom_border)
 
-        legal_moves = [move.to_square for move in board.legal_moves]
-        
-        for move in legal_moves:
-            if move not in seen_nodes:
-                seen_nodes.add(move)
-                queue.append(move)
+    # Start building answer string, can immediately add the top border
+    answer_string = ""
+    answer_string += top_or_bottom_border
 
-        board.remove_piece_at(curr_pos)
-        # print(queue)
-    return visited_nodes_in_order'''
+    # Iterate through each word in the string and add it to the answer string
+    for word in words:
+        if len(word) and word.isalnum():
+            # Construst the string according to the following structure:
+            # '* '
+            # word
+            # ' ' * longest_word_length - len(word)
+            # ' *'
+            cont_string = "* "
+            cont_string += word
+            cont_string += " " * (longest_word_length - len(word))
+            cont_string += " *"
+
+            # Add the word string to the answer string
+            answer_string += cont_string
+
+    # Add the bottom border
+    answer_string += top_or_bottom_border[:len(top_or_bottom_border)-1]
+
+    return answer_string'''
 explainer = Analysis() 
-feedback = explainer.get_feedback('bfs', src)
+feedback = explainer.get_feedback('study', src)
 print(feedback)
