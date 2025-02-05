@@ -4,8 +4,6 @@ from studyExplainer import Analysis
 
 from practical import frame_printing, frame_printing_solution
 
-# from ipynb.fs.full.practical import frame_printing
-# from ipynb.fs.full.practical import *
 
 class Grader():
     def __init__(self):
