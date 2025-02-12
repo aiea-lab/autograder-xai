@@ -5,6 +5,8 @@ import datetime
 
 from practical import frame_printing, frame_printing_solution
 
+STUDENT_FUNCTION = frame_printing
+# STUDENT_FUNCTION = frame_printing_solution
 
 class Grader():
     def __init__(self):
@@ -17,8 +19,7 @@ class Grader():
         """ Given student code, test and return answer """
         try:
             self.case_number += 1
-            # case_ans = frame_printing_solution(case_str)
-            case_ans = frame_printing(case_str)
+            case_ans = STUDENT_FUNCTION(case_str)
         except:
             case_ans = "Failed, implementation error."
 
@@ -54,8 +55,7 @@ class Grader():
 
     def structural_exp(self):
         """ Takes in student src code and matches it against the expected ruleset."""
-        # student_src = inspect.getsource(frame_printing_solution)
-        student_src = inspect.getsource(frame_printing)
+        student_src = inspect.getsource(STUDENT_FUNCTION)
         exp = Analysis()
         feedback = exp.get_feedback(student_src)
         return feedback

@@ -58,12 +58,15 @@ class Analysis:
                     # local_message_try.append(f"{current_rule} is a str type")
                     # local_message_try.append(f"ast.unparse(node): {ast.unparse(node)}")
                     if current_rule in ast.unparse(node):
-                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
+                        # local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
+                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}[...]'")
+
                         rule_counter += 1
                 # Otherwise, current_rule is a node, then we try to match instead.
                 else:
                     if isinstance(node, current_rule):
-                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
+                        # local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
+                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}[...]'")
                         rule_counter += 1
 
                 # Check if we've matched everything
@@ -92,8 +95,10 @@ class Analysis:
             # try to match start of ruleset against top level nodes
             first_rule = ruleset[0]
             for top_node in top_tree_nodes:
+                # print(f"top_node:{top_node}; first_rule={first_rule}")
                 local_message_try = []
                 if isinstance(top_node, first_rule):
+                    
                     local_message_try.append(f"\tmatched against node {top_node}, entering local context")
 
                     success = check_local_context(top_node, ruleset[1:])
@@ -108,8 +113,13 @@ class Analysis:
                     else:
                         local_message_max = local_message_try if len(local_message_try) > len(local_message_max) else local_message_max
             
-            # Finish and add the message that got the furthest
-            message += local_message_max + [""]
+            # If we failed to match any top-level node
+            if not local_message_max:
+                message += [f"\tCould not match first rule {first_rule}."]
+            else:
+                # Finish and add the message that got the furthest
+                message += local_message_max
+            message += [""]
 
             # Notes:
             # Maybe we should stop as soon as we failed to match something?
