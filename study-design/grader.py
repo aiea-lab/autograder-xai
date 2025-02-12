@@ -1,6 +1,7 @@
 import sys
 import inspect
 from studyExplainer import Analysis
+import datetime
 
 from practical import frame_printing, frame_printing_solution
 
@@ -24,14 +25,13 @@ class Grader():
         ret_str = f"== Case {self.case_number}: "
         if case_ans == case_sol:
             # Nothing more to be said, answer was correct.
-            self.log_message += f"{self.case_number}:PASS|"
+            self.log_message += f"{self.case_number}-PASS|"
             return ret_str + "correct answer"
         else:
-            ret_str += "incorrect answer"
-
+            self.log_message += f"{self.case_number}-FAIL|"
             # Offer only error-based explanation here
+            ret_str += "incorrect answer"
             feedback_str = self.error_based_feedback(case_ans)
-            self.log_message += f"{self.case_number}:FAIL |"
             return ret_str + feedback_str
     
     def error_based_feedback(self, case_ans):
@@ -67,9 +67,15 @@ class Grader():
         
     def clear_log_message(self):
         self.log_message = ""
+    
+    def timestamp(self):
+        # Record timestamp on log
+        now = datetime.datetime.now()
+        self.log_message = f"{now.strftime('%H %M %S')}: "
 
 def main():
     g = Grader()
+    g.timestamp()
 
     # Check answers and offer error-based exp
     case1_str = "Hello World in a Frame"
@@ -88,7 +94,7 @@ def main():
     case4_sol = """**********\n* A      *\n* Few    *\n* Words  *\n* Here   *\n* And    *\n* There  *\n* Work   *\n* Things *\n* Out    *\n**********"""  
     print(g.test(case4_str, case4_sol))
 
-    # Log result
+    # Write result
     g.log_result()
     g.clear_log_message()
     
