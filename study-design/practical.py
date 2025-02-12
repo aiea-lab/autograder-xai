@@ -28,7 +28,7 @@ This tool aims to help you figure out a good structure for your solution and hel
 
 def frame_printing(slogan: str) -> str:
     # YOUR CODE HERE
-    return "NOT IMPLEMENTED"
+    raise NotImplementedError
 
 def frame_printing_solution(slogan: str) -> str:
     # First, split the words string into a list of strings

@@ -117,8 +117,6 @@ class Analysis:
             #   (if the whole ruleset was go, then it gives no useful information?)
             #   (probably it should stay, though)
 
-        # return "\n".join(message)
-
         message.append(f"({fully_matched_counter}/{len(rules)} rules matched)")
         if fully_matched_counter < len(rules):
             message.append("***---</3---FAILED TO MATCH ALL RULES---</3---***")
