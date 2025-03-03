@@ -15,26 +15,31 @@ class Analysis:
         
         # look for an assign node that calls slogan.split(' ') to break the input into words, making it much easier to work with
         split_rule = [ast.Assign, "slogan.split(' ')"]  # uses .split() function on input slogan
+        split_adv = "Consider using the built-in '.split()' function to make parsing input easier."
         
         # look for an assign node that then has a bunch of '*'s characters in it. Try to find where the student is creating this. We would try to find an 'assign' character, and then within that line, try to find a 
         # if we can't find it, then we recommend that they create the top and bottom border somewhere. You should be able to derive the length based on the longest word in the group.
         border_rule = [ast.Assign, "*"]  # just the assign isn't enough, need to check for asterisks (this is possible by looking at the string underlying the node.)
+        border_adv = "You might want to calculate the length of the top and bottom border all at once. It should be wide enough to fit around the longest word."
 
         # for the main loop. 
         # -It should iterate through 'words'
         # -check if each word obeys the conditions: not empty, is alphanumeric
         # -assign or aug assign the word and the asterisks to your string solution
         loop_rule = [ast.For, ast.If, ast.Assign, "*"]
+        loop_adv = "There's no way around iterating through each word in the slogan. Remember to check that the word is valud and to place the needed asterisks around it!"
 
         # for return at the end
         # -you just gotta make sure to return at the end, that's all.
         return_rule = [ast.Return]
+        return_adv = "Remember to return your result at the end!"
 
         rules = [split_rule, border_rule, loop_rule, return_rule]
-        return self.enforce_ruleset(src, rules)
+        advice = [split_adv, border_adv, loop_adv, return_adv]
+        return self.enforce_ruleset(src, rules, advice)
     
     # Traverse the tree and enforce the prescribed rules
-    def enforce_ruleset(self, src: str, rules: list[list[type]]) -> str:
+    def enforce_ruleset(self, src: str, rules: list[list[type]], advice: list[str]) -> str:
         """ 
         General rule-matching function.
         Parses 'src' as an AST and then checks that each rule in 'rules' is present.
@@ -59,14 +64,14 @@ class Analysis:
                     # local_message_try.append(f"ast.unparse(node): {ast.unparse(node)}")
                     if current_rule in ast.unparse(node):
                         # local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
-                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}[...]'")
+                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}...'")
 
                         rule_counter += 1
                 # Otherwise, current_rule is a node, then we try to match instead.
                 else:
                     if isinstance(node, current_rule):
                         # local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
-                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}[...]'")
+                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}...'")
                         rule_counter += 1
 
                 # Check if we've matched everything
@@ -87,7 +92,7 @@ class Analysis:
 
         # Match rulesets against local contexts of top level nodes
         fully_matched_counter = 0
-        for ruleset in rules[:]:
+        for i, ruleset in enumerate(rules[:]):
             message.append(f"starting matching for ruleset = {ruleset}")
             
             local_message_max = []
@@ -105,17 +110,18 @@ class Analysis:
                     # print(f"success state = {success}")
 
                     # keep a running max for the local message
-                    # we want to take the longest one, since that one is the closest match
+                    # we want to take the longest one, since that one is the closest match (each element is a matched rule)
                     if success:
                         fully_matched_counter += 1
                         local_message_max = local_message_try
                         break
                     else:
-                        local_message_max = local_message_try if len(local_message_try) > len(local_message_max) else local_message_max
+                        local_message_max = local_message_try + [f"\t{advice[i]}"] if len(local_message_try) > len(local_message_max) else local_message_max
             
             # If we failed to match any top-level node
             if not local_message_max:
                 message += [f"\tCould not match first rule {first_rule}."]
+                message += [f"\t{advice[i]}"]
             else:
                 # Finish and add the message that got the furthest
                 message += local_message_max
