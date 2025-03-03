@@ -47,7 +47,7 @@ class Analysis:
         """
 
         def unparse(node):
-            return f"'{ast.unparse(node)[:30]}...'"
+            return f"'{ast.unparse(node)[:20]}...'"
 
         def check_local_context(sub_tree, sub_rules) -> bool:
             nonlocal local_message_try

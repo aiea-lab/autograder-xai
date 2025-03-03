@@ -8,6 +8,63 @@ from practical import frame_printing, frame_printing_solution
 STUDENT_FUNCTION = frame_printing
 STUDENT_FUNCTION = frame_printing_solution
 
+test_cases = [
+        # Case 1: Basic test case with normal words
+        ("Hello World in a Frame", 
+"""*********
+* Hello *
+* World *
+* in    *
+* a     *
+* Frame *
+*********"""),
+        
+        # Case 2: Words with extra spaces in between (should still be framed correctly)
+        ("Hello   World   Spaced   Frame", 
+"""**********
+* Hello  *
+* World  *
+* Spaced *
+* Frame  *
+**********"""),
+        
+        # Case 3: Remove words with special characters like '?' and '!'
+        ("Extra? Extra! Come Read All About It", 
+"""*********
+* Come  *
+* Read  *
+* All   *
+* About *
+* It    *
+*********"""),
+
+        
+        # Case 4: Edge Case: Extremely long single word (should not break)
+        ("Supercalifragilisticexpialidocious", 
+"""**************************************
+* Supercalifragilisticexpialidocious *
+**************************************"""),
+
+        # Case 5: Numbers should be framed correctly
+        ("Call 555 8675 309", 
+"""********
+* Call *
+* 555  *
+* 8675 *
+* 309  *
+********"""),
+
+        # Case 6: Longest word in the middle, checking border size calculation
+        ("Short Midway Extraordinarily Long", 
+"""*******************
+* Short           *
+* Midway          *
+* Extraordinarily *
+* Long            *
+*******************"""),
+
+    ]
+
 class Grader():
     def __init__(self):
         self.case_number = 0
@@ -78,80 +135,11 @@ class Grader():
         now = datetime.datetime.now()
         self.log_message = f"{now.strftime('%H %M %S')}: "
 
-
 def main():
     g = Grader()
     g.timestamp()
 
-    test_cases = [
-        # Case 1: Basic test case with normal words
-        ("Hello World in a Frame", 
-"""*********
-* Hello *
-* World *
-* in    *
-* a     *
-* Frame *
-*********"""),
-        
-        # Case 2: Words with extra spaces in between (should still be framed correctly)
-        ("Hello   World   Spaced   Frame", 
-"""**********
-* Hello  *
-* World  *
-* Spaced *
-* Frame  *
-**********"""),
-        
-        # Case 3: Remove words with special characters like '?' and '!'
-        ("Extra? Extra! Come Read All About It", 
-"""*********
-* Come  *
-* Read  *
-* All   *
-* About *
-* It    *
-*********"""),
-
-        
-        # Case 4: Edge Case: Extremely long single word (should not break)
-        ("Supercalifragilisticexpialidocious", 
-"""**************************************
-* Supercalifragilisticexpialidocious *
-**************************************"""),
-
-        # Case 5: Numbers should be framed correctly
-        ("Call 555 8675 309", 
-"""********
-* Call *
-* 555  *
-* 8675 *
-* 309  *
-********"""),
-
-        # Case 6: Longest word in the middle, checking border size calculation
-        ("Short Midway Extraordinarily Long", 
-"""*******************
-* Short           *
-* Midway          *
-* Extraordinarily *
-* Long            *
-*******************"""),
-
-    ]
-
     for i, (case_str, case_sol) in enumerate(test_cases, 1):
-        # print(f"== Running Test Case {i}: {case_str[:30]} ==")
-        # if i == 3:
-            # print(case_str)
-            # words_raw = case_str.split(' ')
-            # words = [w for w in words_raw if len(w) and w.isalnum()]
-            # print(words)
-            # ans = STUDENT_FUNCTION(case_str)
-            # print(ans)
-            # longest_word_length = len(max(words, key=len))
-            # print(longest_word_length)
-
         ans = g.test(case_str, case_sol)
         print(ans)
         if "FAIL" in ans:
@@ -163,7 +151,6 @@ def main():
 
     structural_feedback_str = g.structural_exp()
     print(f"\t{structural_feedback_str}")
-
 
 
 if (__name__ == '__main__'):
