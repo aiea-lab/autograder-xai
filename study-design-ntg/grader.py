@@ -1,14 +1,12 @@
 import sys
 import inspect
-from studyExplainer import Analysis
 import datetime
 
-from practical import frame_printing, frame_printing_solution
+from practical import frame_printing
 
 STUDENT_FUNCTION = frame_printing
-STUDENT_FUNCTION = frame_printing_solution
 
-test_cases = [
+TEST_CASES = [
         # Case 1: Basic test case with normal words
         ("Hello World in a Frame", 
 """*********
@@ -115,13 +113,6 @@ class Grader():
         
         return feedback if feedback else "\n\t- Output format incorrect, but specific issue not identified"
         
-    def structural_exp(self):
-        """ Takes in student src code and matches it against the expected ruleset."""
-        student_src = inspect.getsource(STUDENT_FUNCTION)
-        exp = Analysis()
-        feedback = exp.get_feedback(student_src)
-        return feedback
-
     def log_result(self):
         """Logs the result of the submission to a text file 'log.txt' in the local directory."""
         with open("log.txt", "a") as log:
@@ -139,19 +130,15 @@ def main():
     g = Grader()
     g.timestamp()
 
-    for i, (case_str, case_sol) in enumerate(test_cases, 1):
+    for i, (case_str, case_sol) in enumerate(TEST_CASES, 1):
         ans = g.test(case_str, case_sol)
         print(ans)
         if "FAIL" in ans:
-            print(f"  ({len(test_cases)-i} test cases remaining.)")
+            print(f"  ({len(TEST_CASES)-i} test cases remaining.)")
             break
 
     g.log_result()
     g.clear_log_message()
-
-    structural_feedback_str = g.structural_exp()
-    print(f"\t{structural_feedback_str}")
-
 
 if (__name__ == '__main__'):
     sys.exit(main())
