@@ -26,8 +26,8 @@ class Analysis:
         # -It should iterate through 'words'
         # -check if each word obeys the conditions: not empty, is alphanumeric
         # -assign or aug assign the word and the asterisks to your string solution
-        loop_rule = [ast.For, ast.If, ast.Assign, "*"]
-        loop_adv = "There's no way around iterating through each word in the slogan. Remember to check that the word is valud and to place the needed asterisks around it!"
+        loop_rule = [ast.For, ast.Assign, "*"]
+        loop_adv = "You'll probably need to loop through each word in the slogan. Remember to place the needed asterisks around it!"
 
         # for return at the end
         # -you just gotta make sure to return at the end, that's all.
@@ -45,6 +45,9 @@ class Analysis:
         Parses 'src' as an AST and then checks that each rule in 'rules' is present.
         Reports that all nodes were successfully matched or which node could not be found.
         """
+
+        def unparse(node):
+            return f"'{ast.unparse(node)[:30]}...'"
 
         def check_local_context(sub_tree, sub_rules) -> bool:
             nonlocal local_message_try
@@ -64,14 +67,14 @@ class Analysis:
                     # local_message_try.append(f"ast.unparse(node): {ast.unparse(node)}")
                     if current_rule in ast.unparse(node):
                         # local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
-                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}...'")
+                        local_message_try.append(f"\tnode '{current_rule}' matched against '{unparse(node)}'")
 
                         rule_counter += 1
                 # Otherwise, current_rule is a node, then we try to match instead.
                 else:
                     if isinstance(node, current_rule):
                         # local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)}'")
-                        local_message_try.append(f"\tnode '{current_rule}' matched against '{ast.unparse(node)[:30]}...'")
+                        local_message_try.append(f"\tnode '{current_rule}' matched against '{unparse(node)}'")
                         rule_counter += 1
 
                 # Check if we've matched everything
@@ -104,7 +107,8 @@ class Analysis:
                 local_message_try = []
                 if isinstance(top_node, first_rule):
                     
-                    local_message_try.append(f"\tmatched against node {top_node}, entering local context")
+                    # local_message_try.append(f"\tmatched against node {top_node}, entering local context")
+                    local_message_try.append(f"\tmatched against node {unparse(top_node)}, entering local context")
 
                     success = check_local_context(top_node, ruleset[1:])
                     # print(f"success state = {success}")
