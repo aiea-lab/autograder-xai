@@ -1,2 +1,0 @@
-they'll install this first thing
-* ipynb
